@@ -36,6 +36,14 @@
       if (el.getBoundingClientRect().top < window.innerHeight) { el.style.transition = 'none'; el.classList.add('in'); return; }
       io.observe(el);
     });
+    /* safety net: if a browser throttles the observer, reveal on scroll anyway */
+    var ticking = false;
+    var sweep = function () {
+      ticking = false;
+      var limit = window.innerHeight * 1.1;
+      rv.forEach(function (el) { if (!el.classList.contains('in') && el.getBoundingClientRect().top < limit) { el.classList.add('in'); io.unobserve(el); } });
+    };
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; setTimeout(sweep, 150); } }, { passive: true });
   } else {
     rv.forEach(function (el) { el.classList.add('in'); });
   }
