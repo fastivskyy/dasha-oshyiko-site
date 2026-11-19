@@ -61,7 +61,7 @@
 <form class="form rv" id="brief" novalidate>
 <p class="eyebrow">Бриф</p>
 <h2 class="h3">Розкажіть про&nbsp;задачу</h2>
-<p class="form__intro">Заповніть кілька полів&nbsp;— лист або&nbsp;повідомлення сформується автоматично.</p>
+<p class="form__intro">Кілька полів&nbsp;— і&nbsp;заявка одразу прийде Даші в&nbsp;Telegram.</p>
 <div class="fgrid">
 <div class="field"><label for="f-brand">Бренд <i>*</i></label><input id="f-brand" name="brand" type="text" autocomplete="organization" required></div>
 <div class="field"><label for="f-product">Продукт</label><input id="f-product" name="product" type="text" placeholder="Напр., каблучки, сукня, крем"></div>
@@ -70,8 +70,9 @@
 <div class="field"><label for="f-contact">Телефон, Telegram або&nbsp;пошта <i>*</i></label><input id="f-contact" name="contact" type="text" required></div>
 <div class="field full"><label for="f-comment">Коментар і&nbsp;референси</label><textarea id="f-comment" name="comment" placeholder="Що важливо показати, посилання на приклади, терміни"></textarea></div>
 </div>
-<div class="btns"><button class="btn btn--p" type="submit">Надіслати на&nbsp;пошту</button><button class="btn btn--s" type="button" data-tg>Надіслати в&nbsp;Telegram</button></div>
-<p class="form__hint">* обовʼязкові поля. Для&nbsp;Telegram текст брифу скопіюється&nbsp;— залишиться вставити його в&nbsp;чат.</p>
+<div class="hp" aria-hidden="true"><label for="f-website">Сайт</label><input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+<div class="btns"><button class="btn btn--p" type="submit" data-send>Надіслати заявку</button></div>
+<p class="form__hint">* обовʼязкові поля</p>
 <p class="form__status" role="status" aria-live="polite"></p>
 </form>
 </div>

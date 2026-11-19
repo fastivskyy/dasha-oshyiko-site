@@ -115,43 +115,33 @@
     });
   }
 
-  /* ----- brief form: compose an email or a Telegram message ----- */
+  /* ----- brief form: send straight to Telegram via the site's bot ----- */
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzoDTyeiajPybnOeGu6tMtQe2UxkPE1kIoS3MIcZBTk7t3gIDccDzr8wN4tJPIg3NVD/exec';
   var form = d.getElementById('brief');
   if (form) {
     var status = form.querySelector('.form__status');
-    function briefText() {
-      var get = function (n) { var el = form.elements[n]; return el ? el.value.trim() : ''; };
-      var lines = [
-        'Бриф на зйомку',
-        '',
-        'Бренд: ' + get('brand'),
-        'Продукт: ' + get('product'),
-        'Формат: ' + get('package'),
-        "Ім'я: " + get('name'),
-        'Контакт: ' + get('contact')
-      ];
-      var c = get('comment');
-      if (c) lines.push('', 'Коментар / референси:', c);
-      return lines.join('\n');
-    }
+    var btn = form.querySelector('[data-send]');
+    var started = Date.now();
+    var val = function (n) { var el = form.elements[n]; return el ? el.value.trim() : ''; };
+    var fail = function () {
+      status.innerHTML = 'Не вдалося надіслати. Напишіть, будь ласка, напряму в <a href="https://t.me/dasha_oshiyko" target="_blank" rel="noopener">Telegram</a> або на <a href="mailto:oshyikoo@gmail.com">oshyikoo@gmail.com</a>.';
+    };
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!form.reportValidity()) return;
-      var subj = 'Бриф на зйомку — ' + form.elements.brand.value.trim();
-      location.href = 'mailto:oshyikoo@gmail.com?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(briefText());
-      status.textContent = 'Відкриваємо вашу пошту з готовим листом.';
-    });
-    var tg = form.querySelector('[data-tg]');
-    if (tg) tg.addEventListener('click', function () {
-      if (!form.reportValidity()) return;
-      var text = briefText();
-      var open = function () { window.open('https://t.me/dasha_oshiyko', '_blank', 'noopener'); };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () {
-          status.textContent = 'Текст брифу скопійовано. Вставте його в чат Telegram.';
-          open();
-        }, function () { status.textContent = 'Не вдалося скопіювати. Напишіть, будь ласка, у Telegram напряму.'; open(); });
-      } else { open(); }
+      if (Date.now() - started < 2500) return;
+      var data = { brand: val('brand'), product: val('product'), package: val('package'), name: val('name'), contact: val('contact'), comment: val('comment'), website: val('website') };
+      btn.disabled = true; btn.textContent = 'Надсилаємо…'; status.textContent = '';
+      fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (res && res.ok) {
+            form.reset();
+            status.textContent = 'Дякуємо, заявку надіслано. Даша звʼяжеться з вами за вказаним контактом.';
+            btn.textContent = 'Надіслано';
+          } else { fail(); btn.disabled = false; btn.textContent = 'Надіслати заявку'; }
+        })
+        .catch(function () { fail(); btn.disabled = false; btn.textContent = 'Надіслати заявку'; });
     });
     var pre = new URLSearchParams(location.search).get('package');
     if (pre && form.elements.package) {

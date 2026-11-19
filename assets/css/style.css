@@ -323,6 +323,9 @@ body.menu-open{overflow:hidden}
 .field input::placeholder,.field textarea::placeholder{color:#8C8077}
 .form .btns{margin-top:32px}
 .form__hint{margin-top:16px;font-size:13px;line-height:1.55;color:var(--muted)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.btn:disabled{opacity:.6;cursor:default}
+.form__status a{color:var(--cocoa)}
 .form__status{margin-top:16px;font-size:14px;line-height:1.5;color:var(--cocoa);min-height:1.5em}
 
 /* ---------- footer ---------- */
