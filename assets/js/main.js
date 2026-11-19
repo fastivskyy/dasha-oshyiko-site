@@ -48,20 +48,57 @@
     rv.forEach(function (el) { el.classList.add('in'); });
   }
 
-  /* ----- video cards: play a local file inline if one exists, otherwise the link opens Instagram ----- */
+  /* ----- video cards: local file plays right here; one video at a time ----- */
   d.querySelectorAll('.vbox[data-src]').forEach(function (box) {
-    var link = box.querySelector('.vplay');
-    if (!link) return;
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-      var v = d.createElement('video');
-      v.src = box.getAttribute('data-src'); v.controls = true; v.playsInline = true; v.setAttribute('playsinline', '');
-      v.addEventListener('error', function () { v.remove(); box.classList.remove('is-playing'); window.open(link.href, '_blank', 'noopener'); }, { once: true });
-      box.appendChild(v);
+    var btn = box.querySelector('.vplay');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      d.querySelectorAll('.vbox.is-playing video').forEach(function (v) { v.pause(); });
+      var v = box.querySelector('video');
+      if (!v) {
+        v = d.createElement('video');
+        v.src = box.getAttribute('data-src');
+        v.controls = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto';
+        var poster = box.querySelector('img'); if (poster) v.poster = poster.currentSrc || poster.src;
+        v.addEventListener('play', function () {
+          d.querySelectorAll('.vbox video').forEach(function (o) { if (o !== v) o.pause(); });
+        });
+        box.appendChild(v);
+      }
       box.classList.add('is-playing');
       var p = v.play(); if (p && p.catch) p.catch(function () {});
-      v.focus();
     });
+  });
+
+  /* ----- video carousel arrows (phones and tablets) ----- */
+  d.querySelectorAll('.vcar').forEach(function (car) {
+    var track = car.querySelector('.vgrid');
+    var cards = [].slice.call(track.querySelectorAll('.vcard'));
+    var prev = car.querySelector('[data-dir="-1"]');
+    var next = car.querySelector('[data-dir="1"]');
+    var num = car.querySelector('.vnav__n span');
+    if (!prev || !next || !cards.length) return;
+    var current = function () {
+      var x = track.scrollLeft, best = 0, bd = Infinity;
+      cards.forEach(function (c, i) { var off = Math.abs((c.offsetLeft - cards[0].offsetLeft) - x); if (off < bd) { bd = off; best = i; } });
+      if (x + track.clientWidth >= track.scrollWidth - 2) best = cards.length - 1;
+      return best;
+    };
+    var update = function () {
+      var i = current();
+      num.textContent = String(i + 1);
+      prev.disabled = i === 0;
+      next.disabled = i === cards.length - 1;
+    };
+    var go = function (dir) {
+      var i = Math.max(0, Math.min(cards.length - 1, current() + dir));
+      track.scrollTo({ left: cards[i].offsetLeft - cards[0].offsetLeft, behavior: 'smooth' });
+    };
+    prev.addEventListener('click', function () { go(-1); });
+    next.addEventListener('click', function () { go(1); });
+    var t = null;
+    track.addEventListener('scroll', function () { clearTimeout(t); t = setTimeout(update, 80); }, { passive: true });
+    update();
   });
 
   /* ----- portfolio filter (also follows #hash, back/forward) ----- */
