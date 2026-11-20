@@ -60,6 +60,8 @@
         v.src = box.getAttribute('data-src');
         v.controls = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto';
         var poster = box.querySelector('img'); if (poster) v.poster = poster.currentSrc || poster.src;
+        var ttl = box.parentNode.querySelector('.vmeta__t'); if (ttl) v.setAttribute('aria-label', 'Відео ' + ttl.textContent);
+        v.addEventListener('ended', function () { box.classList.remove('is-playing'); v.currentTime = 0; btn.focus({ preventScroll: true }); });
         v.addEventListener('play', function () {
           d.querySelectorAll('.vbox video').forEach(function (o) { if (o !== v) o.pause(); });
         });
@@ -69,6 +71,8 @@
       var p = v.play(); if (p && p.catch) p.catch(function () { v.muted = true; v.play().catch(function () {}); });
     });
   });
+
+  d.addEventListener('visibilitychange', function () { if (d.hidden) d.querySelectorAll('.vbox video').forEach(function (v) { v.pause(); }); });
 
   /* ----- video carousel arrows (phones and tablets) ----- */
   d.querySelectorAll('.vcar').forEach(function (car) {
@@ -142,8 +146,9 @@
         var n = items[(j + items.length) % items.length].querySelector('img');
         if (n && n.getAttribute('data-full')) { var pre = new Image(); pre.src = n.getAttribute('data-full'); }
       });
-      img.alt = '';
       cap.textContent = b.getAttribute('data-cap') || im.alt;
+      var cnt = lb.querySelector('.lb__n'); if (cnt) cnt.textContent = (idx + 1) + ' / ' + items.length;
+      img.alt = cap.textContent;
     };
     d.addEventListener('click', function (e) {
       var b = e.target.closest('.ph-btn');
@@ -151,6 +156,7 @@
       e.preventDefault();
       items = [].slice.call(d.querySelectorAll('.ph-btn')).filter(function (x) { return x.offsetParent !== null; });
       show(items.indexOf(b));
+      d.querySelectorAll('.vbox video').forEach(function (v) { v.pause(); });
       root.classList.add('lb-open');
       lb.showModal();
     });
