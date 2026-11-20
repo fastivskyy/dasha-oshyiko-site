@@ -115,7 +115,8 @@ p{text-wrap:pretty}
 .menu__list a{display:block;padding:14px 0;border-bottom:1px solid var(--line);font-family:var(--display);font-size:30px;line-height:1.2;letter-spacing:.06em;text-transform:uppercase;text-decoration:none}
 .menu__list a[aria-current="page"]{color:var(--cocoa)}
 .menu__foot{margin-top:40px;display:flex;flex-direction:column;gap:20px}
-html.menu-open,body.menu-open{overflow:hidden}
+html.menu-open{overflow:hidden}
+.menu{overscroll-behavior:contain}
 @media (max-height:500px) and (orientation:landscape){:root{--hdr:64px}.menu{padding-top:16px}.menu__list a{font-size:22px;padding:10px 0}.menu__foot{margin-top:20px}}
 
 /* ---------- hero ---------- */
