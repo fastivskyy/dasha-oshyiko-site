@@ -66,7 +66,7 @@
         box.appendChild(v);
       }
       box.classList.add('is-playing');
-      var p = v.play(); if (p && p.catch) p.catch(function () {});
+      var p = v.play(); if (p && p.catch) p.catch(function () { v.muted = true; v.play().catch(function () {}); });
     });
   });
 
