@@ -87,6 +87,7 @@
     var update = function () {
       var i = current();
       num.textContent = String(i + 1);
+      cards.forEach(function (c, k) { if (k !== i) { var v = c.querySelector('video'); if (v && !v.paused) v.pause(); } });
       prev.disabled = i === 0;
       next.disabled = i === cards.length - 1;
     };
